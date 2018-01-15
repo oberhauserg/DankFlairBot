@@ -1,3 +1,7 @@
+# Don't include config files with passwords and such
+*.yml
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
