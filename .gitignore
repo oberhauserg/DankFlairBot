@@ -1,6 +1,8 @@
 # Don't include config files with passwords and such
 *.yml
 
+# Don't include idea folders
+.idea/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
