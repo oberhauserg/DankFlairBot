@@ -54,7 +54,9 @@ def setup_threads(subreddit):
 class MessageMonitorThread(threading.Thread):
 
     def __init__(self):
-        threading.Thread.__init__(self)
+
+        super().__init__(daemon=True)
+
         pass
 
     def run(self):
@@ -66,7 +68,7 @@ class MessageMonitorThread(threading.Thread):
 class ModeratorsMonitorThread(threading.Thread):
 
     def __init__(self, subreddit):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
         self.subreddit = subreddit
 
@@ -85,7 +87,7 @@ class ModeratorsMonitorThread(threading.Thread):
 class HotMonitorThread(threading.Thread):
 
     def __init__(self, subreddit):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
         self.subreddit = subreddit
 
@@ -127,7 +129,7 @@ class RuleMaintenanceThread(threading.Thread):
 
     def __init__(self, subreddit):
 
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
         self.subreddit = subreddit
 
@@ -161,7 +163,7 @@ class RuleMaintenanceThread(threading.Thread):
 class UserStreamThread(threading.Thread):
 
     def __init__(self):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
     def run(self):
 
@@ -192,7 +194,7 @@ class UserStreamThread(threading.Thread):
 class UserMaintenanceThread(threading.Thread):
 
     def __init__(self):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
     def run(self):
 
@@ -220,7 +222,7 @@ class UserMaintenanceThread(threading.Thread):
 class PostStreamThread(threading.Thread):
 
     def __init__(self, subreddit=None):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
         self.sub = subreddit
 
@@ -246,7 +248,7 @@ class PostStreamThread(threading.Thread):
 class CommentStreamThread(threading.Thread):
 
     def __init__(self, subreddit=None):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
         self.sub = subreddit
 
@@ -272,7 +274,7 @@ class CommentStreamThread(threading.Thread):
 class PostMaintenanceThread(threading.Thread):
 
     def __init__(self):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
 
     def run(self):
@@ -318,7 +320,7 @@ class PostMaintenanceThread(threading.Thread):
 class CommentMaintenanceThread(threading.Thread):
 
     def __init__(self):
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
 
     def run(self):

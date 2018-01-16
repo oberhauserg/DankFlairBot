@@ -25,7 +25,7 @@ def main():
 
 #    ThreadedServices.setup_threads(SUBREDDIT)
 
-    #ThreadedServices.setup_threads("OnionHate")
+    ThreadedServices.setup_threads("OnionHate")
 
     while True:
         time.sleep(0)
