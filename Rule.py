@@ -365,6 +365,9 @@ class flair(Output):
 
     def perform_action(self, eval_post=None, eval_user=None):
 
+        if not self.managed:
+            return
+
         if eval_post is not None:
 
             RedditManager.RedditManager.give_post_flair(post_id=eval_post.post_id,
