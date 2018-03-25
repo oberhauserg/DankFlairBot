@@ -365,6 +365,9 @@ class flair(Output):
 
     def perform_action(self, eval_post=None, eval_user=None):
 
+        if not self.managed:
+            return  # Don't do anything to this flair.
+
         if eval_post is not None:
 
             RedditManagerUtils.RedditManager.give_post_flair(post_id=eval_post.post_id,
@@ -382,10 +385,11 @@ class flair(Output):
 
             #RedditManager.RedditManager.give_user_flair(eval_user.username, self.context, self.user_text, self.user_class)
 
+
             RulesManager.RulesManager.add_to_batch_flair(RedditManagerUtils.user_flair_struct(username=eval_user.username,
                                                                                               subreddit=self.context,
                                                                                               flair_text=self.user_text,
                                                                                               flair_class=self.user_class))
-
+            
             pass
 
