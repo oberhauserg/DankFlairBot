@@ -367,7 +367,7 @@ class flair(Output):
 
         if eval_post is not None:
 
-            RedditManagerUtils.RedditManagerUtils.give_post_flair(post_id=eval_post.post_id,
+            RedditManagerUtils.RedditManager.give_post_flair(post_id=eval_post.post_id,
                                                                   flair_text=self.submission_text,
                                                                   flair_class=self.submission_class)
 

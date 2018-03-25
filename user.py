@@ -39,7 +39,7 @@ class user(databasable):
 
         # TODO: Fetch the object representation from reddit
 
-        new_user = RedditManagerUtils.RedditManagerUtils.fetchUserMeta(self.username, self.subreddit)
+        new_user = RedditManagerUtils.RedditManager.fetchUserMeta(self.username, self.subreddit)
 
         if new_user is None:
             return

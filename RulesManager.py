@@ -36,7 +36,7 @@ class RulesManager():
     @staticmethod
     def fetch_ruleset(subreddit, page):
 
-        raw_content = RedditManagerUtils.RedditManagerUtils.getWikiContent(subreddit, page)
+        raw_content = RedditManagerUtils.RedditManager.getWikiContent(subreddit, page)
 
         yaml = YAML(typ='safe')
 
@@ -145,7 +145,7 @@ class RulesManager():
 
         RulesManager.__flair_lock = True
 
-        RedditManagerUtils.RedditManagerUtils.give_user_flair_list(RulesManager.__batch_flair)
+        RedditManagerUtils.RedditManager.give_user_flair_list(RulesManager.__batch_flair)
 
         RulesManager.__flair_lock = False
 

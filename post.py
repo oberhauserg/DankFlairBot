@@ -26,7 +26,7 @@ class post(databasable):
 
     def fetch(self):
 
-        post = RedditManagerUtils.RedditManagerUtils.fetchPostMeta(self.post_id)
+        post = RedditManagerUtils.RedditManager.fetchPostMeta(self.post_id)
 
         self.post_id = post.post_id
 
