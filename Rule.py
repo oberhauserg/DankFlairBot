@@ -365,7 +365,7 @@ class flair(Output):
 
     def perform_action(self, eval_post=None, eval_user=None):
 
-        if not self.managed:
+        if self.managed is not None and not self.managed:
             return  # Don't do anything to this flair.
 
         if eval_post is not None:
@@ -390,6 +390,6 @@ class flair(Output):
                                                                                               subreddit=self.context,
                                                                                               flair_text=self.user_text,
                                                                                               flair_class=self.user_class))
-            
+
             pass
 

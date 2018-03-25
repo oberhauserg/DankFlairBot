@@ -432,7 +432,6 @@ class RedditManager():
 
         final_mapping = dict()
 
-
         for flair_struct in flair_struct_list:
 
             if flair_struct.subreddit not in final_mapping:
@@ -440,7 +439,6 @@ class RedditManager():
 
             if flair_struct.flair_text is None:
                 continue
-
 
             if not DatabaseManager.is_flair(flair_struct.subreddit,
                                             flair_struct.username,
