@@ -3,7 +3,7 @@ from databasable import databasable
 from InfoNotFetchedError import InfoNotFetchedError
 #from MissingCursorError import MissingCursorError
 
-import RedditManager
+import RedditManagerUtils
 import time
 
 
@@ -39,7 +39,7 @@ class user(databasable):
 
         # TODO: Fetch the object representation from reddit
 
-        new_user = RedditManager.RedditManager.fetchUserMeta(self.username, self.subreddit)
+        new_user = RedditManagerUtils.RedditManagerUtils.fetchUserMeta(self.username, self.subreddit)
 
         if new_user is None:
             return

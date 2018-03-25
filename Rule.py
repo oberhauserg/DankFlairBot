@@ -1,7 +1,7 @@
 
 import DatabaseManager
 
-import RedditManager
+import RedditManagerUtils
 
 import RulesManager
 
@@ -367,9 +367,9 @@ class flair(Output):
 
         if eval_post is not None:
 
-            RedditManager.RedditManager.give_post_flair(post_id=eval_post.post_id,
-                                          flair_text=self.submission_text,
-                                          flair_class=self.submission_class)
+            RedditManagerUtils.RedditManagerUtils.give_post_flair(post_id=eval_post.post_id,
+                                                                  flair_text=self.submission_text,
+                                                                  flair_class=self.submission_class)
 
 
             if self.user_text is not None:
@@ -382,10 +382,10 @@ class flair(Output):
 
             #RedditManager.RedditManager.give_user_flair(eval_user.username, self.context, self.user_text, self.user_class)
 
-            RulesManager.RulesManager.add_to_batch_flair(RedditManager.user_flair_struct(username=eval_user.username,
-                                                                                         subreddit=self.context,
-                                                                                         flair_text=self.user_text,
-                                                                                         flair_class=self.user_class))
+            RulesManager.RulesManager.add_to_batch_flair(RedditManagerUtils.user_flair_struct(username=eval_user.username,
+                                                                                              subreddit=self.context,
+                                                                                              flair_text=self.user_text,
+                                                                                              flair_class=self.user_class))
 
             pass
 

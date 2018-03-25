@@ -1,8 +1,10 @@
 import sqlite3
 import threading
+import sys
 from comment import comment
 from post import post
 from user import user
+
 
 class DatabaseManager():
 
@@ -95,6 +97,17 @@ class DatabaseManager():
                         )
                         ''')
 
+        cursor.executescript('''
+                        CREATE TABLE IF NOT EXISTS flairs
+                        (
+                            subreddit TEXT,
+                            username TEXT,
+                            flair_text TEXT,
+                            flair_class TEXT,
+                            CONSTRAINT flairs_username_subreddit_pk PRIMARY KEY (username, subreddit)
+                        )
+                        ''')
+
         cur_connection.commit()
 
         pass
@@ -154,6 +167,38 @@ class DatabaseManager():
             cur_user.update(cur_connection.cursor())
 
         cur_connection.commit()
+
+    @staticmethod
+    def update_flairs(flair_list):
+
+        inserts = "BEGIN TRANSACTION;"
+
+        for flair_struct in flair_list:
+
+            this_class = flair_struct.flair_class
+
+            if this_class is None:
+                this_class = "NULL"
+            else:
+                this_class = "'" + this_class + "'"
+
+
+            inserts += "INSERT OR REPLACE INTO flairs(subreddit, username, flair_text, flair_class) " \
+                        "VALUES ('{subreddit}'," \
+                        "'{username}'," \
+                        "'{flair_text}'," \
+                        "{flair_class}" \
+                        ");\n".format(subreddit=flair_struct.subreddit,
+                                   username = flair_struct.username,
+                                   flair_text = flair_struct.flair_text,
+                                   flair_class = this_class)
+
+
+        inserts += "COMMIT;"
+
+        cur_connection = DatabaseManager.get_connection()
+
+        DatabaseManager._execute_script_robust(cur_connection, inserts)
 
     @staticmethod
     def get_all_comments(dateLimit = None):
@@ -441,7 +486,7 @@ class DatabaseManager():
         conn = DatabaseManager.get_connection()
 
         DatabaseManager._execute_robust(conn.cursor(), """ DELETE FROM modded_subreddits
-                         WHERE username='{username}' and subreddit='{subreddit}'
+                         WHERE username='{username}' and subreddit='{subreddit}' COLLATE NOCASE
                     """.format(username=username, subreddit=subreddit))
 
         conn.commit()
@@ -453,7 +498,7 @@ class DatabaseManager():
 
 
         results = DatabaseManager._execute_robust(conn.cursor(), """ SELECT username FROM modded_subreddits
-                         WHERE subreddit='{subreddit}'
+                         WHERE subreddit='{subreddit}' COLLATE NOCASE
                     """.format(subreddit=subreddit))
 
         mod_strings = []
@@ -480,7 +525,7 @@ class DatabaseManager():
 
         results = DatabaseManager._execute_robust(conn.cursor(),
                                 """SELECT comments.username, comments.subreddit, SUM(comments.comment_karma)
-                                FROM comments Where comments.subreddit='{subreddit}' and comments.username='{username}'
+                                FROM comments Where comments.subreddit='{subreddit}' COLLATE NOCASE and comments.username='{username}'
                                 GROUP BY comments.username""".format(subreddit=subreddit, username=username))
 
         if len(results) > 0:
@@ -495,7 +540,7 @@ class DatabaseManager():
 
         results = DatabaseManager._execute_robust(conn.cursor(),
                                 """SELECT posts.username, posts.subreddit, SUM(posts.post_karma)
-                                FROM posts Where posts.subreddit='{subreddit}' and posts.username='{username}'
+                                FROM posts Where posts.subreddit='{subreddit}' COLLATE NOCASE and posts.username='{username}'
                                 GROUP BY posts.username""".format(subreddit=subreddit, username=username))
 
         if len(results) > 0:
@@ -510,8 +555,18 @@ class DatabaseManager():
 
         results = DatabaseManager._execute_robust(conn.cursor(),
                     """ SELECT username FROM modded_subreddits
-                         WHERE subreddit='{subreddit}' and username='{username}'
+                         WHERE subreddit='{subreddit}' COLLATE NOCASE and username='{username}'
                     """.format(subreddit=subreddit, username=username))
+
+        return len(results) >= 1
+
+    def is_flair(subreddit, username, flair_text, flair_class):
+        conn = DatabaseManager.get_connection()
+
+        results = DatabaseManager._execute_robust(conn.cursor(),
+                                                  """ SELECT username FROM modded_subreddits
+                                                       WHERE subreddit='{subreddit}' COLLATE NOCASE and username='{username}'
+                                                  """.format(subreddit=subreddit, username=username))
 
         return len(results) >= 1
 
@@ -526,6 +581,28 @@ class DatabaseManager():
 
                 return result
 
-            except:
+            except Exception as e:
 
-                print("Database error. Trying again...")
+                print("Database error. Trying again..." + str(e))
+
+    @staticmethod
+    def _execute_script_robust(connection, query):
+
+        connection.isolation_level = None
+
+        q_split = query.split(";")
+
+        while True:
+
+            try:
+
+                cursor = connection.cursor()
+
+                for q in q_split:
+                    cursor.execute(q)
+
+                return
+
+            except Exception as e:
+                cursor.execute("rollback")
+                print("Database error. Trying again..." + str(e))

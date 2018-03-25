@@ -1,10 +1,13 @@
 import praw
 import Constants
 
+from DatabaseManager import DatabaseManager
+
 from user import user
 
 from post import post
 from comment import comment
+
 
 import time
 
@@ -119,10 +122,10 @@ class RedditManager():
     def login_thread(username, password, client_id, client_secret):
 
         RedditManager._praw_dict[threading.current_thread().ident] = praw.Reddit(client_id=client_id,
-                                                  client_secret=client_secret,
-                                                  user_agent=Constants.USER_AGENT,
-                                                  username=username,
-                                                  password=password)
+                                                                                 client_secret=client_secret,
+                                                                                 user_agent=Constants.USER_AGENT,
+                                                                                 username=username,
+                                                                                 password=password)
 
 
     @staticmethod
@@ -352,6 +355,30 @@ class RedditManager():
         pass
 
     @staticmethod
+    def get_flairs(subreddit):
+
+        try:
+
+            r = RedditManager.get_connection(moderator=True)
+
+            flair_list = []
+
+            for flair in r.subreddit(subreddit).flair(limit=None):
+                a_flair = user_flair_struct(username=flair['user'].name,
+                                            subreddit=subreddit,
+                                            flair_class=flair['flair_css_class'],
+                                            flair_text=flair['flair_text'])
+
+                flair_list.append(a_flair)
+
+            return flair_list
+
+        except:
+
+            pass
+
+
+    @staticmethod
     def give_post_flair(post_id, flair_text, flair_class):
 
         try:
@@ -411,15 +438,26 @@ class RedditManager():
             if flair_struct.subreddit not in final_mapping:
                 final_mapping[flair_struct.subreddit] = []
 
-            final_mapping[flair_struct.subreddit]\
-                .append(dict([('user', flair_struct.username),
-                              ('flair_text', flair_struct.flair_text),
-                              ('flair_css_class', flair_struct.flair_class)]))
+            if flair_struct.flair_text is None:
+                continue
+
+
+            if not DatabaseManager.is_flair(flair_struct.subreddit,
+                                            flair_struct.username,
+                                            flair_struct.flair_text,
+                                            flair_struct.flair_class):
+                final_mapping[flair_struct.subreddit]\
+                    .append(dict([('user', flair_struct.username),
+                                  ('flair_text', flair_struct.flair_text),
+                                  ('flair_css_class', flair_struct.flair_class)]))
 
         r = RedditManager.get_connection(moderator=True)
 
         for key, value in final_mapping.items():
             r.subreddit(key).flair.update(value)
+
+        # If everything updated successfully, update in the database
+        DatabaseManager.update_flairs(flair_struct_list)
 
     @staticmethod
     def _usertouser(reddit_user, subreddit=None):
@@ -435,22 +473,6 @@ class RedditManager():
             pass
 
         return new_user
-
-    @staticmethod
-    def get_flairs(subreddit):
-
-        conn = RedditManager.get_connection(moderator=True)
-
-        flair_list = []
-
-        for flair in conn.subreddit(subreddit).flair(limit=None):
-            flair_struct = user_flair_struct(username=flair['user'], subreddit=subreddit,
-                                 flair_text=flair['flair_text'], flair_class=flair['flair_css_class'])
-
-
-            flair_list.append(flair_struct)
-
-        return flair_list
 
     @staticmethod
     def get_messages():

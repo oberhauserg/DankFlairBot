@@ -1,6 +1,6 @@
 import sqlite3
 from databasable import databasable
-import RedditManager
+import RedditManagerUtils
 
 class comment(databasable):
 
@@ -20,7 +20,7 @@ class comment(databasable):
     def fetch(self):
         # TODO: update the current values of this comment
 
-        comment = RedditManager.RedditManager.fetchCommentMeta(self.comment_id)
+        comment = RedditManagerUtils.RedditManagerUtils.fetchCommentMeta(self.comment_id)
 
         self.comment_id = comment.comment_id
         self.post_id = comment.post_id

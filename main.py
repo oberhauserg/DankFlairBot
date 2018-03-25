@@ -5,7 +5,7 @@ import sqlite3
 import time
 import ThreadedServices
 from DatabaseManager import DatabaseManager
-from RedditManager import RedditManager
+from RedditManagerUtils import RedditManager
 from ruamel.yaml import YAML
 import threading
 import Rule
@@ -25,7 +25,7 @@ def main():
 
 #    ThreadedServices.setup_threads(SUBREDDIT)
 
-    #ThreadedServices.setup_threads("OnionHate")
+    ThreadedServices.setup_threads("OnionHate")
 
     while True:
         time.sleep(0)

@@ -1,5 +1,5 @@
 import threading
-from RedditManager import RedditManager
+from RedditManagerUtils import RedditManager
 from DatabaseManager import DatabaseManager
 import RulesManager
 from user import user
@@ -31,6 +31,8 @@ def setup_threads(subreddit):
 
     comment_maint = CommentMaintenanceThread()
 
+    flair_maint = FlairMantenanceThread(subreddit)
+
     mod_monitor.start()
 
     rule_maint.start()
@@ -49,6 +51,7 @@ def setup_threads(subreddit):
 
     comment_maint.start()
 
+    flair_maint.start()
 
 
 class MessageMonitorThread(threading.Thread):
@@ -78,6 +81,23 @@ class ModeratorsMonitorThread(threading.Thread):
 
         for mod in userlist:
             DatabaseManager.ensure_user_exists(mod.username, self.subreddit)
+
+        #Sleep for 10 minutes
+        time.sleep(10 * 60)
+
+
+class FlairMantenanceThread(threading.Thread):
+
+    def __init__(self, subreddit):
+        threading.Thread.__init__(self)
+
+        self.subreddit = subreddit
+
+    def run(self):
+
+        flair_list = RedditManager.get_flairs(subreddit=self.subreddit)
+
+        DatabaseManager.update_flairs(flair_list)
 
         #Sleep for 10 minutes
         time.sleep(10 * 60)

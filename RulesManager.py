@@ -1,7 +1,7 @@
 
 from ruamel.yaml import YAML
 
-import RedditManager
+import RedditManagerUtils
 import DatabaseManager
 import Rule
 import time
@@ -36,7 +36,7 @@ class RulesManager():
     @staticmethod
     def fetch_ruleset(subreddit, page):
 
-        raw_content = RedditManager.RedditManager.getWikiContent(subreddit, page)
+        raw_content = RedditManagerUtils.RedditManagerUtils.getWikiContent(subreddit, page)
 
         yaml = YAML(typ='safe')
 
@@ -145,7 +145,7 @@ class RulesManager():
 
         RulesManager.__flair_lock = True
 
-        RedditManager.RedditManager.give_user_flair_list(RulesManager.__batch_flair)
+        RedditManagerUtils.RedditManagerUtils.give_user_flair_list(RulesManager.__batch_flair)
 
         RulesManager.__flair_lock = False
 

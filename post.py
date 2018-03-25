@@ -1,6 +1,6 @@
 import sqlite3
 from databasable import databasable
-import RedditManager
+import RedditManagerUtils
 
 class post(databasable):
 
@@ -26,7 +26,7 @@ class post(databasable):
 
     def fetch(self):
 
-        post = RedditManager.RedditManager.fetchPostMeta(self.post_id)
+        post = RedditManagerUtils.RedditManagerUtils.fetchPostMeta(self.post_id)
 
         self.post_id = post.post_id
 
