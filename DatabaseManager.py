@@ -560,13 +560,22 @@ class DatabaseManager():
 
         return len(results) >= 1
 
+    @staticmethod
     def is_flair(subreddit, username, flair_text, flair_class):
         conn = DatabaseManager.get_connection()
 
-        results = DatabaseManager._execute_robust(conn.cursor(),
-                                                  """ SELECT username FROM modded_subreddits
-                                                       WHERE subreddit='{subreddit}' COLLATE NOCASE and username='{username}'
-                                                  """.format(subreddit=subreddit, username=username))
+        this_class = flair_class
+
+        if this_class is None:
+            this_class = "NULL"
+        else:
+            this_class = "'" + this_class + "'"
+
+        query = """ SELECT * FROM flairs WHERE username='{username}' and subreddit='{subreddit}'
+                    and flairs.flair_text='{flair_text}' and flairs.flair_class={flair_class}"""\
+            .format(subreddit=subreddit, username=username, flair_text=flair_text, flair_class=this_class)
+
+        results = DatabaseManager._execute_robust(conn.cursor(), query)
 
         return len(results) >= 1
 
