@@ -227,7 +227,9 @@ class UserMaintenanceThread(threading.Thread):
                 user_sub_list = []
 
                 for cur_user in user_list:
-                    cur_user.fetch()
+                    if not cur_user.fetch():
+                        DatabaseManager.remove_user(cur_user.username, cur_user.subreddit)
+                        user_list.remove(cur_user)
 
                 DatabaseManager.updateUserList(user_list)
 

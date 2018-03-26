@@ -42,13 +42,15 @@ class user(databasable):
         new_user = RedditManagerUtils.RedditManager.fetchUserMeta(self.username, self.subreddit)
 
         if new_user is None:
-            return
+            return False
 
         self.username = new_user.username
         self.subreddit = new_user.subreddit
         self.userid = new_user.userid
 
         self.last_update = int(time.time())
+
+        return True
 
         pass
 

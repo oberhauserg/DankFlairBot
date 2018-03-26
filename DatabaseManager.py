@@ -492,6 +492,18 @@ class DatabaseManager():
         conn.commit()
 
     @staticmethod
+    def remove_user(username, subreddit):
+
+        conn = DatabaseManager.get_connection()
+
+        query = """DELETE FROM users WHERE username='{username}' and subreddit='{subreddit}' COLLATE NOCASE"""\
+            .format(username=username, subreddit=subreddit)
+
+        DatabaseManager._execute_robust(conn.cursor(), query)
+
+        conn.commit()
+
+    @staticmethod
     def update_moderators(mod_list, subreddit):
 
         conn = DatabaseManager.get_connection()
