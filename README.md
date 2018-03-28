@@ -1,37 +1,54 @@
-## Welcome to GitHub Pages
+## What is DankFlairBot?
 
-You can use the [editor on GitHub](https://github.com/XNiiNJA/DankFlairBot/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+DankFlairBot (DFB) is a bot designed from the ground up to actively manage flairs on any subreddit _in real time_. This means it actively scans through a subreddit in order to keep an updated state of every user's contributions. Unlike Automoderator, this is happening all the time, it doesn't need an API driven event in order to react. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### How do I use it?
 
-### Markdown
+DFB uses synax similar to Automoderator, which is based off YAML. The concept is also the same, where there are inputs that lead to outputs. Currently, only a small amount of inputs and outputs are supported, but it is very easy to add more. 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Here is a simple example:
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
+```yaml
+---
 
-- Bulleted
-- List
+# Show moderators
 
-1. Numbered
-2. List
+# This rule will only be executed on users.
+type: user 
 
-**Bold** and _Italic_ and `Code` text
+# This is the moderator input rule.
+moderator: 
+    value: True # We want the output to be performed if the user *is* a moderator of this sub.
 
-[Link](url) and ![Image](src)
+# The priority of this rule is 5. Higher priority overrides lower priority.
+# A priority of -1 overrides everything.
+priority: 5 
+    
+# This is the flair output.
+# This will set the flair to "Moderator flair text" and the class to "Moderator"
+flair:
+  user_text: Moderator flair text
+  user_class: Moderator
+  
+---
+
+# This rule will only be executed on users as well.
+type: user
+
+# This is a comment score input. 
+# It will run the output if the value is *less* than 15.
+total_comment_score:
+    value: 15
+    condition: less
+
+# A fairly low priority of 1. Easy to override 
+priority: 1
+
+# These users will be labled as "NOOB" with a class of noob
+flair:
+   user_text: NOOB
+   user_class: noob
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/XNiiNJA/DankFlairBot/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
