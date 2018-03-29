@@ -108,6 +108,18 @@ class DatabaseManager():
                         )
                         ''')
 
+        cursor.executescript('''
+                        CREATE TABLE IF NOT EXISTS bans
+                        (
+                            username TEXT,
+                            subreddit TEXT,
+                            time INT,
+                            note TEXT,
+                            CONSTRAINT bans_username_subreddit_pk PRIMARY KEY (username, subreddit),
+                            CONSTRAINT bans_users_username_subreddit_fk FOREIGN KEY (username, subreddit) REFERENCES users (username, subreddit)
+                        );
+        ''')
+
         cur_connection.commit()
 
         pass
@@ -199,6 +211,34 @@ class DatabaseManager():
         cur_connection = DatabaseManager.get_connection()
 
         DatabaseManager._execute_script_robust(cur_connection, inserts)
+
+    @staticmethod
+    def update_bans(ban_list, subreddit):
+
+        query = "BEGIN TRANSACTION;"
+
+        query += "DELETE FROM bans WHERE subreddit='{subreddit}';"\
+            .format(subreddit=subreddit)
+
+        for ban_struct in ban_list:
+
+            query += '''INSERT OR REPLACE INTO bans(subreddit, username, time, note) VALUES (
+                        '{subreddit}',
+                        '{username}',
+                        {time},
+                        '{note}'
+                        );\n'''.format(subreddit=ban_struct.subreddit,
+                                   username = ban_struct.username,
+                                   time = str(int(ban_struct.time)),
+                                   note = ban_struct.note.translate(str.maketrans({"'":  r"''"})))
+
+
+        query += "COMMIT;"
+
+        cur_connection = DatabaseManager.get_connection()
+
+        DatabaseManager._execute_script_robust(cur_connection, query)
+
 
     @staticmethod
     def get_all_comments(dateLimit = None):
@@ -325,21 +365,27 @@ class DatabaseManager():
         return comment_list
 
     @staticmethod
-    def get_all_users(limit=None, sort='old'):
+    def get_all_users(limit=None, sort='old', subreddit=None):
         user_list = []
 
         cur_connection = DatabaseManager.get_connection()
 
         cursor = cur_connection.cursor()
 
-        if limit is None:
+        query = """SELECT * FROM users """
 
-            result = DatabaseManager._execute_robust(cursor, 'SELECT * FROM users ORDER BY last_update ASC, username ASC')
+        if subreddit is not None:
+            query += """ Where subreddit='{subreddit}' """.format(subreddit=subreddit)
 
-        else:
 
-            result = DatabaseManager._execute_robust(cursor, 'SELECT * FROM users ORDER BY last_update ASC, username ASC LIMIT {limit}'
-                                    .format(limit=limit))
+        query += """ ORDER BY last_update ASC, username ASC """
+
+        if limit is not None:
+
+            query += """ LIMIT {limit} """.format(limit=limit)
+
+        result = DatabaseManager._execute_robust(cursor,
+                                        query)
 
         for row in result:
             new_user = user(row[0], row[1], row[2])
@@ -592,6 +638,19 @@ class DatabaseManager():
         return len(results) >= 1
 
     @staticmethod
+    def is_banned(username, subreddit):
+
+        conn = DatabaseManager.get_connection()
+
+        query = """
+                SELECT * FROM bans WHERE username='{username}' and subreddit='{subreddit}'
+                """.format(username=username, subreddit=subreddit)
+
+        results = DatabaseManager._execute_robust(conn.cursor(), query)
+
+        return len(results) >= 1
+
+    @staticmethod
     def _execute_robust(cursor, query):
 
         while True:
@@ -620,10 +679,16 @@ class DatabaseManager():
                 cursor = connection.cursor()
 
                 for q in q_split:
+                    print(q)
                     cursor.execute(q)
+
+
 
                 return
 
             except Exception as e:
-                cursor.execute("rollback")
+                try:
+                    cursor.execute("rollback")
+                except:
+                    print("rollback unnecessary")
                 print("Database error. Trying again..." + str(e))

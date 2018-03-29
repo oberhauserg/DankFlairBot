@@ -21,11 +21,17 @@ def main():
 
     RedditManager.login_threads_from_file("config.yml")
 
-    RedditManager.get_messages()
+    ThreadedServices.setup_threads("BotParty")
+
+    #    RedditManager.get_bans("BotParty")
+
+ #   RedditManager.get_messages()
 
 #    ThreadedServices.setup_threads(SUBREDDIT)
 
-    ThreadedServices.setup_threads("OnionHate")
+#    ThreadedServices.setup_threads("OnionHate")
+
+#    ThreadedServices.setup_threads("OnionHate")
 
     while True:
         time.sleep(0)

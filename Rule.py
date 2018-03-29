@@ -278,9 +278,19 @@ class banned(BooleanInput):
 
         super().__init__(value, context)
 
-    def evaluate(self, eval_value=None):
+    def evaluate(self, eval_post=None, eval_user=None):
 
-        # TODO: Actually get data for this.
+        if eval_post is not None:
+
+            return super().evaluate(
+                eval_value=DatabaseManager.DatabaseManager.is_banned(username=eval_post.username, subreddit=self.context)
+            )
+
+        elif eval_user is not None:
+
+            return super().evaluate(
+                eval_value=DatabaseManager.DatabaseManager.is_banned(username=eval_user.username, subreddit=self.context)
+            )
 
         return False
 

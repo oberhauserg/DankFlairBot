@@ -387,6 +387,12 @@ class RedditManager():
 
             this_post = r.submission(id=post_id)
 
+            if this_post.flair.submission.link_flair_text is not None and \
+                this_post.flair.submission.link_flair_css_class is not None and\
+                this_post.flair.submission.link_flair_text == flair_text and \
+                this_post.flair.submission.link_flair_css_class == flair_class:
+                return # The flair has already been set.
+
             flair_choice = this_post.flair.choices()
 
             flair_template_choice = None
@@ -487,7 +493,29 @@ class RedditManager():
 
         return message_list
 
+    @staticmethod
+    def get_bans(subreddit):
 
+        conn = RedditManager.get_connection(moderator=True)
+
+        ban_list = []
+
+        for ban in conn.subreddit(subreddit).banned(limit=None):
+            a_ban = user_ban_struct(ban.name, subreddit, ban.date, ban.note)
+
+            ban_list.append(a_ban)
+
+        return ban_list
+
+
+class user_ban_struct():
+
+    def __init__(self, username, subreddit, time, note):
+
+        self.username = username
+        self.subreddit = subreddit
+        self.time = time
+        self.note = note
 
 
 

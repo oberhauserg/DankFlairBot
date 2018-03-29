@@ -11,7 +11,8 @@ class RulesManager():
 
     _internal_ruleset = []
 
-    __input_string_to_type = dict([('maximum_all_rank', Rule.maximum_all_rank),
+    __input_string_to_type = dict([
+                            ('maximum_all_rank', Rule.maximum_all_rank),
                             ('maximum_sub_rank', Rule.maximum_sub_rank),
                             ('link_score', Rule.link_score),
                             ('comment_score', Rule.comment_score),

@@ -33,6 +33,8 @@ def setup_threads(subreddit):
 
     flair_maint = FlairMantenanceThread(subreddit)
 
+    ban_maint = BanMaintenanceThread(subreddit)
+
     mod_monitor.start()
 
     rule_maint.start()
@@ -52,6 +54,8 @@ def setup_threads(subreddit):
     comment_maint.start()
 
     flair_maint.start()
+
+    ban_maint.start()
 
 
 class MessageMonitorThread(threading.Thread):
@@ -165,7 +169,7 @@ class RuleMaintenanceThread(threading.Thread):
                 for a_post in posts:
                     RulesManager.RulesManager.evaluate_and_action(subreddit=self.subreddit, eval_post=a_post)
 
-                users = DatabaseManager.get_all_users()
+                users = DatabaseManager.get_all_users(subreddit=self.subreddit)
 
                 for a_user in users:
                     RulesManager.RulesManager.evaluate_and_action(subreddit=self.subreddit, eval_user=a_user)
@@ -381,3 +385,22 @@ class CommentMaintenanceThread(threading.Thread):
 
                 pass
 
+class BanMaintenanceThread(threading.Thread):
+
+
+    def __init__(self, subreddit):
+        threading.Thread.__init__(self)
+
+        self.subreddit = subreddit
+
+
+    def run(self):
+        #TODO: change this by looking at changes in the modlog, and updating accordingly.
+        #Currently, this simply pulls the entire mod list and updates it every 10 minutes.
+
+        ban_list = RedditManager.get_bans(subreddit=self.subreddit)
+
+        DatabaseManager.update_bans(ban_list=ban_list, subreddit=self.subreddit)
+
+        # Sleep for 10 minutes
+        time.sleep(10 * 60)
