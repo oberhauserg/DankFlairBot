@@ -4,9 +4,15 @@ DankFlairBot (DFB) is a bot designed from the ground up to actively manage flair
 
 ### How do I use it?
 
-DFB uses synax similar to Automoderator, which is based off YAML. The concept is also the same, where there are inputs that lead to outputs. Currently, only a small amount of inputs and outputs are supported, but it is very easy to add more. 
+DFB uses synax similar to Automoderator, which is based off YAML. The concept is also the same, where there are inputs that lead to outputs. A collection of inputs and outputs is called a _rule_. Rules can be processed on posts or users, this will be noted as the _type_ of the rule. Inputs that are user specific, but processed on a post, will apply the output to the post.  
 
-Here is a simple example:
+Currently, only a small amount of inputs and outputs are supported, but more inputs and outputs are being added constantly.
+
+The configuration for a bot is placed at the url:
+
+    https://www.reddit.com/r/[subreddit]/wiki/dfb-config
+
+Here is a simple example of a configuration:
 
 
 ```yaml
